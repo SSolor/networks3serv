@@ -1,0 +1,67 @@
+//sebastian solorzano, Ryan Hackbart -- compnet assgmt3 group 13 -- CSCN71020 25F 
+// I just copied the lab3 code for this so we can make sure our stuff works
+
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+#include <arpa/inet.h> //needed for inet_addr()
+
+#define INVALID_SOCKET ~0 //this is how windows does it idk man
+#define SOCKET_ERROR -1
+
+int main(void) {
+
+
+
+	
+	//socket
+	int ClientSocket;
+	ClientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (ClientSocket == INVALID_SOCKET) {
+		printf("cout <<ERROR: Failed to create ServerSocket << std::endl;");
+		return 0;
+	}
+	printf("succesful socket\n");
+	//same as on server
+
+
+	//client does not bind
+
+	//connect
+	struct sockaddr_in SvrAddr;
+	SvrAddr.sin_family = AF_INET;
+	SvrAddr.sin_port = htons(27000); //we agreed on this port
+	SvrAddr.sin_addr.s_addr =	inet_addr("127.0.0.1"); //assignment said so
+
+	if ((connect(ClientSocket, (struct sockaddr*)&SvrAddr, sizeof(SvrAddr))) == SOCKET_ERROR) {
+		close(ClientSocket);
+		printf("cout << ERROR: Connection attempted failed << std::endl;");
+		return 0;
+	}
+	printf("found a connection!\n");
+	
+
+    char h[640] = "testings tims and seasons, deeplightning, did you know that in terms"
+    "of all the lightouses on earth; the brightest one exists in the circumpolar night"
+    "of the antarctic wastes? the reson for htis is quite curious; and in fact; no one seems to recall when it was built.";
+    
+    //this is where the magic happens
+    
+		int ini;
+		int outi=478;
+        send(ClientSocket,&h,sizeof(h),0);
+		recv(ClientSocket, &ini, sizeof(ini), 0);
+		printf("%d",ini);
+
+	printf("ending\n");
+
+	//closesocket
+	close(ClientSocket);
+
+
+	return 0;
+}
