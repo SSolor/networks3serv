@@ -45,17 +45,21 @@ int main(void) {
 	printf("found a connection!\n");
 	
 
-    char h[640] = "testings tims and seasons, deeplightning, did you know that in terms"
-    "of all the lightouses on earth; the brightest one exists in the circumpolar night"
-    "of the antarctic wastes? the reson for htis is quite curious; and in fact; no one seems to recall when it was built.";
+    char h[640] = "testings tims and seasons,deeplightning,did you know that in terms"
+    "of all the lightouses on earth\7 the brightest one exists in the circumpolar night"
+    "of the antarctic wastes? the reson for htis is quite curious\7 and in fact\7 no one seems to recall when it was built.";
     
     //this is where the magic happens
-    
-		int ini;
-		int outi=478;
-        send(ClientSocket,&h,sizeof(h),0);
-		recv(ClientSocket, &ini, sizeof(ini), 0);
-		printf("%d",ini);
+    char welcome[50];
+    int decision =1;
+    recv(ClientSocket,&welcome,sizeof(welcome),0);
+    printf("recieved: %s\n",welcome);
+
+    send(ClientSocket,&decision,sizeof(decision),0);
+    send(ClientSocket,&h,sizeof(h),0);
+    decision=0;
+    send(ClientSocket,&decision,sizeof(decision),0);
+
 
 	printf("ending\n");
 
