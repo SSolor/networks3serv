@@ -47,17 +47,55 @@ int main(void) {
 
     char h[640] = "testings tims and seasons,deeplightning,did you know that in terms"
     "of all the lightouses on earth\7 the brightest one exists in the circumpolar night"
-    "of the antarctic wastes? the reson for htis is quite curious\7 and in fact\7 no one seems to recall when it was built.";
+    "of the antarctic wastes? the reson for htis is quite curious\7 and in fact\7 no one seems to recall when it was built.\n";
     
     //this is where the magic happens
-    char welcome[50];
+    char welcome[64];
     int decision =1;
-    recv(ClientSocket,&welcome,sizeof(welcome),0);
-    printf("recieved: %s\n",welcome);
 
+    //recieves welcom
+    
+//RECV A: SMALL STRING
+    recv(ClientSocket,&welcome,sizeof(welcome),0);
+    printf("recieved: %s",welcome);
+
+    //sends decision (write)
+
+//SEND B: INT
     send(ClientSocket,&decision,sizeof(decision),0);
+
+    //sends message
+    
+//SEND C: STRING
     send(ClientSocket,&h,sizeof(h),0);
+
+
+    
+    decision=2;
+    //sends decision(read)
+
+//SEND B: INT
+    send(ClientSocket,&decision,sizeof(decision),0);
+
+    int loops=0;
+    char buf[640];
+
+//RECIEVE D:
+    recv(ClientSocket,&loops,sizeof(loops),0);
+    printf("%d\n",loops);
+
+    for(int i=0;i<loops;i++){
+        printf("looped once\n");
+        recv(ClientSocket,&buf,sizeof(buf),0);
+        printf("%s",buf);
+    }
+    
+
+
     decision=0;
+    //sends decision (quit)
+
+//SEND B: INT
     send(ClientSocket,&decision,sizeof(decision),0);
 
 

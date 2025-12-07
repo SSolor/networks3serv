@@ -1,18 +1,18 @@
 //sebastian solorzano, Ryan Hackbart -- compnet assgmt3 group 13 -- CSCN71020 25F 
-//file stuff, parsing stuff (intf)
+//file stuff, linked list stuff (intf)
 
 //okay so having all the functions in one file was so unbelievably ugly and I couldn't stand it
 //and I figured out how to do multiple files with gcc so its fine
 #pragma once
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-
 	//char limits
 #define TOPIC_AUTH_MAX 64
 #define BODY_MAX 512
 #define POST_MAX TOPIC_AUTH_MAX+TOPIC_AUTH_MAX+BODY_MAX
+
+//for server-side prints
+#define DEBUG stdout
+
 
 
 //the reqs said all posts must be loaded into memory on startup, even if 
@@ -32,13 +32,13 @@ typedef struct postlist{
 //LINKED LIST FXNS
 void addPost(PPOSTNODE* list, char msg[POST_MAX]);
 void pop(PPOSTNODE* head, char out[POST_MAX]);
-
+void peekDepth(PPOSTNODE head, int depth, char out[POST_MAX]);
 //do we need to remove? don't think so
-int postsLength(PPOSTNODE list);
+int countListLength(PPOSTNODE list);
 void deleteList(PPOSTNODE* list);
 //we don't need read/display functions, we can literally just copy the strings
 
 
 //FILE READWRTIE FXNS
-void loadPostsFromFile(PPOSTNODE* head);
-//POST PARSING FUNCTIONS
+void loadPostsFromFile(PPOSTNODE* head, char filename[]);
+void savePostsToFile(PPOSTNODE* head, char filename[]);
