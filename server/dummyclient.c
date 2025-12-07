@@ -61,12 +61,16 @@ int main(void) {
 
     //sends decision (write)
 
+    int bs;
+    scanf("%d",&bs);
 //SEND B: INT
     send(ClientSocket,&decision,sizeof(decision),0);
 
     //sends message
     
 //SEND C: STRING
+    int sending=1;
+    send(ClientSocket,&sending,sizeof(sending),0);
     send(ClientSocket,&h,sizeof(h),0);
 
 
@@ -96,6 +100,9 @@ int main(void) {
     //sends decision (quit)
 
 //SEND B: INT
+//makes it wait before quitting
+int n;
+    scanf("%d",&n);
     send(ClientSocket,&decision,sizeof(decision),0);
 
 

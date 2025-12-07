@@ -86,10 +86,10 @@ int main(void) {
 	
 		int outi = 321;
 		int ini;
-		send(ConnectionSocket, &outi, sizeof(outi),0);
+	//	send(ConnectionSocket, &outi, sizeof(outi),0);
 		//send(ConnectionSocket, &opp, sizeof(opp), 0);
-		recv(ConnectionSocket,&ini,sizeof(ini),0);
-		printf("%d",ini);
+	//	recv(ConnectionSocket,&ini,sizeof(ini),0);
+	//	printf("%d",ini);
 
 		
 		//send(ConnectionSocket, &kill, sizeof(kill), 0);

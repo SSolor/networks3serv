@@ -56,8 +56,8 @@ int main(void) {
 		int ini;
 		int outi=478;
 		recv(ClientSocket, &ini, sizeof(ini), 0);
-		send(ClientSocket,&outi,sizeof(outi),0);
-		printf("%d",ini);
+	//	send(ClientSocket,&outi,sizeof(outi),0);
+	//	printf("%d",ini);
 
 	printf("ending\n");
 
