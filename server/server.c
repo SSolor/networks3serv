@@ -104,6 +104,9 @@ int main(void) {
 	//first thing we're doing is sending a welcome message to the client
 	//unsure what size they'll be accepting in, so i'm using the smallest commonly defined size we have
 	send(ConnectionSocket,&welcome,sizeof(welcome),0);
+	//ok so i figured this out through dealing with a really annoying bug, but buffer sizes between the client server
+	//have to be the same (recieving can hopefully be bigger?). therefore an assumption on size is made with nearly every
+	//send/recv
 	fprintf(DEBUG,"welcome sent to client\n");
 
 
@@ -118,9 +121,17 @@ int main(void) {
 		if(choice==wpost){
 			fprintf(DEBUG,"client writing a post...\n");
 
+			//we can do the same thing we did we read if we want to interpret 'collection of posts'
+			//as taking them in all at once. clients sends us how many posts they're gonna send;
+			//we both loop that amount of times
+				//int torecieve;
+				//recv(ConnectionSocket,&torecieve,sizeof(torecieve),0);
+				//fprintf(DEBUG,"recieved quantity client is sending (%d)\n",torecieve);
+				//for(int i=0;i<torecieve;i++){
 			recv(ConnectionSocket,buf,sizeof(buf),0);//recieving into buf
 			addPost(&posts,buf);
 			fprintf(DEBUG,"post saved to linked list\n");
+				//}
 		}
 
 		//user wishes to read all posts
