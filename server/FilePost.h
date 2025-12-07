@@ -35,7 +35,6 @@ void pop(PPOSTNODE* head, char out[POST_MAX]);
 void peekDepth(PPOSTNODE head, int depth, char out[POST_MAX]);
 //do we need to remove? don't think so
 int countListLength(PPOSTNODE list);
-void deleteList(PPOSTNODE* list);
 //we don't need read/display functions, we can literally just copy the strings
 
 
