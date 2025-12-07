@@ -1,3 +1,6 @@
+//sebastian solorzano, Ryan Hackbart -- compnet assgmt3 group 13 -- CSCN71020 25F 
+// intf for server functions, aka all the send and recieves
+//(not done in main because threads)
 
 #include "FilePost.h"
 #include <pthread.h>

@@ -64,7 +64,6 @@ int countListLength(PPOSTNODE head){
     return len;
 }
 
-void deleteList(PPOSTNODE* head);
 
 
 void loadPostsFromFile(PPOSTNODE* head, char filename[]){

@@ -66,7 +66,7 @@ int main(void) {
 
 
 	//listen
-	if (listen(ServerSocket, 1) == SOCKET_ERROR) { //I think its fine if this stays at 1?
+	if (listen(ServerSocket, 5) == SOCKET_ERROR) { //letting this be higher because the server will wait for input to accept again
 		close(ServerSocket);
 
 		fprintf(stderr,"ERROR: listen failed to configure ServerSocket\n");
@@ -74,8 +74,6 @@ int main(void) {
 	}
 	fprintf(DEBUG,"listening\n");
 
-
-	//I believe we have to begin a loop starting here
 
 	//accept
 	int ConnectionSocket;
@@ -88,8 +86,10 @@ int main(void) {
 	while(open){
 		fprintf(DEBUG,"waiting for connection...\n");
 
-		ConnectionSocket = SOCKET_ERROR;
-		if ((ConnectionSocket = accept(ServerSocket, NULL, NULL)) == SOCKET_ERROR) {
+		//mallocing it because it was acting really funky
+        int* ConnectionSocket = malloc(sizeof(int));
+		*ConnectionSocket = SOCKET_ERROR;
+		if ((*ConnectionSocket = accept(ServerSocket, NULL, NULL)) == SOCKET_ERROR) {
 			close(ServerSocket);
 
 			fprintf(stderr,"ERROR: could not accept connection\n");
@@ -97,30 +97,25 @@ int main(void) {
 		}
 		fprintf(DEBUG,"client connected\n");
 
-		//setting up thread,
-		pthread_t thread;
 
+		//create only accepts 1 arg, so we squish everything we need into a single struct
 		SDAT dat;
-
 		dat.posts=&posts;
 		dat.mutlock=&mutlock; //we all must share the mutlock, otherwise it doesn't work
+		dat.ConnectionSocket=ConnectionSocket;
 
+		pthread_t thread;
 		pthread_create(&thread,NULL,RunServer,&dat);
 		pthread_detach(thread);
-		//here now, I belive we create a thread, give it connection socket, and run the entire rest of the code as a function
-		//run a thread detach or whatever?
-		//and then add some sort of exit clause so the program can end without using ^C (letting us save)
 
 
 		//this is dumb, but I can't think of how else to both let
 		//the server keep running, and let it end without using ^C
 		//(it has to end naturally in order to save)
-
-		//printf("close server? (enter 0)\n");
-		//scanf("%d",&open);
+		printf("close server? (enter 0)\n");
+		scanf("%d",&open);
 	}
 	//ending while a client is still running might cause problems for them, but its not like we can have a join...
-	//threads are all done, server's shutting down
 	
 	//it makes sense to close the mutex once everything's done, right?
 	pthread_mutex_destroy(&mutlock);

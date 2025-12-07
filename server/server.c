@@ -1,3 +1,6 @@
+//sebastian solorzano, Ryan Hackbart -- compnet assgmt3 group 13 -- CSCN71020 25F 
+// impl for server functions, aka all the send and recieves
+//(not done in main because threads)
 
 #include "server.h"
 #include "FilePost.h"
@@ -14,6 +17,10 @@ void * RunServer (void* args){
     //thread functions must accept void * so we have to do this
     SDAT* data= (SDAT*) args;
 
+    //the connectionsocket was acting really funky, so we're copying it over and deleting the original
+    int ConnectionSocket = *data->ConnectionSocket;
+    free(data->ConnectionSocket);
+    printf("our connection sock number is %d\n",ConnectionSocket);
 
     char buf[POST_MAX]; //we use this a lot so it feels silly to declare it every time
 
@@ -22,33 +29,33 @@ void * RunServer (void* args){
 
 	//first thing we're doing is sending a welcome message to the client
 	//unsure what size they'll be accepting in, so i'm using the smallest commonly defined size we have
-	send(*data->ConnectionSocket,&welcome,sizeof(welcome),0);
+	send(ConnectionSocket,&welcome,sizeof(welcome),0);
 	//ok so i figured this out through dealing with a really annoying bug, but buffer sizes between the client server
 	//have to be the same (recieving can hopefully be bigger?). therefore an assumption on size is made with nearly every
 	//send/recv
-	fprintf(DEBUG,"welcome sent to client %d\n",*data->ConnectionSocket);
+	fprintf(DEBUG,"welcome sent to client %d\n",ConnectionSocket);
 
 
 	INPUTS choice =start;
 	while(choice!=quit){
-		fprintf(DEBUG,"client %d choosing...\n",*data->ConnectionSocket);
+		fprintf(DEBUG,"client %d choosing...\n",ConnectionSocket);
 		//recieves client input on what they want to do
-		recv(*data->ConnectionSocket,&choice,sizeof(choice),0);
+		recv(ConnectionSocket,&choice,sizeof(choice),0);
 
 
 		//user wishes to write a post
 		if(choice==wpost){
-			fprintf(DEBUG,"client %d wishes to write posts...\n",*data->ConnectionSocket);
+			fprintf(DEBUG,"client %d wishes to write posts...\n",ConnectionSocket);
 
 			//I figured that to satisfy the 'collection of posts' req,
 			//we'd be doing the same thing i'm doing for reading
 			int torecieve;
 
-			recv(*data->ConnectionSocket,&torecieve,sizeof(torecieve),0);
-			fprintf(DEBUG,"recieved quantity client %d is sending (%d)\n",*data->ConnectionSocket,torecieve);
+			recv(ConnectionSocket,&torecieve,sizeof(torecieve),0);
+			fprintf(DEBUG,"recieved quantity client %d is sending (%d)\n",ConnectionSocket,torecieve);
 
 			for(int i=0;i<torecieve;i++){
-				recv(*data->ConnectionSocket,buf,sizeof(buf),0);//recieving into buf
+				recv(ConnectionSocket,buf,sizeof(buf),0);//recieving into buf
 
                 //mutexes on everything, i'm taking no risks
                 pthread_mutex_lock(data->mutlock);
@@ -73,7 +80,7 @@ void * RunServer (void* args){
 
 		//user wishes to read all posts
 		else if(choice==rposts){
-			fprintf(DEBUG,"client %d wishes to read posts\n",*data->ConnectionSocket);
+			fprintf(DEBUG,"client %d wishes to read posts\n",ConnectionSocket);
 
 			//tells the client how many posts they will recieve
 			//(made an assumption off the project requirements that they did not all have to be sent as a single string)
@@ -84,8 +91,8 @@ void * RunServer (void* args){
 			int toSend= countListLength(*data->posts);
             pthread_mutex_unlock(data->mutlock);
 
-			send(*data->ConnectionSocket,&toSend,sizeof(toSend),0);
-			fprintf(DEBUG,"sent quantity of posts to client %d (%d)\n",*data->ConnectionSocket,toSend);
+			send(ConnectionSocket,&toSend,sizeof(toSend),0);
+			fprintf(DEBUG,"sent quantity of posts to client %d (%d)\n",ConnectionSocket,toSend);
 
 			//sending the client each post
 			for(int i =0; i<toSend;i++){
@@ -97,8 +104,8 @@ void * RunServer (void* args){
 				//this gives us O(n^2) complexity but I can't think of how else to do it with a linked list
 				//(without destroying it)
 
-				send(*data->ConnectionSocket,&buf,sizeof(buf),0);
-				//fprintf(DEBUG,"sent single post to client %d\n",*data->ConnectionSocket);
+				send(ConnectionSocket,&buf,sizeof(buf),0);
+				//fprintf(DEBUG,"sent single post to client %d\n",ConnectionSocket);
 			}
 			//if we have to recieve everything as a single mega string (which is really dumb and a terrible idea)
 			//then instead we can do:
@@ -117,12 +124,9 @@ void * RunServer (void* args){
 		}
 
 	}
-	fprintf(DEBUG,"client %d quit\n",*data->ConnectionSocket);
+	fprintf(DEBUG,"client %d quit\n",ConnectionSocket);
 
-	//i belive this can be either in or out of the loop?
-	//but if we give the thread its own copy, and then detach it...
-	//its probably better to do this in the loop just in case
-	close(*data->ConnectionSocket);
+	close(ConnectionSocket);
     //do I need to end the thread or something? not sure
     //dont clear posts since its used by everyone
 }
