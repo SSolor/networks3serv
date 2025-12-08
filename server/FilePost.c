@@ -75,7 +75,7 @@ void loadPostsFromFile(PPOSTNODE* head, char filename[]){
 
 		while(fgets(buf,POST_MAX,fp)!=NULL){//fgets can return this apparently, so convenient
             //if client uses scanf to generate posts:
-            // buf[strcspn(buf,"\n")]='\0';
+            buf[strcspn(buf,"\n")]='\0';
                 //funny little function that'll give the index of the first \n, letting us clip it
             fprintf(DEBUG,"loaded once\n");
 
@@ -98,9 +98,9 @@ void savePostsToFile(PPOSTNODE* head, char filename[]){
         pop(head,buf); //conveniently, this also serves the role of emptying the list
 
         //if client uses scanf to generate posts:
-        //fprintf(fp,"%s\n",buf); 
+        fprintf(fp,"%s\n",buf); 
         //if client uses fgets to generate posts:
-        fprintf(fp,"%s",buf); 
+        //fprintf(fp,"%s",buf); 
 
     }
     fclose(fp);

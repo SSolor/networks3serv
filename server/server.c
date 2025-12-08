@@ -37,10 +37,14 @@ void * RunServer (void* args){
 
 
 	INPUTS choice =start;
+	char intbuf[TOPIC_AUTH_MAX];
 	while(choice!=quit){
 		fprintf(DEBUG,"client %d choosing...\n",ConnectionSocket);
 		//recieves client input on what they want to do
-		recv(ConnectionSocket,&choice,sizeof(choice),0);
+
+		//UPDATED: client is sending as strings
+		recv(ConnectionSocket,&intbuf,sizeof(intbuf),0);
+		choice = atoi(intbuf);
 
 
 		//user wishes to write a post
@@ -50,8 +54,11 @@ void * RunServer (void* args){
 			//I figured that to satisfy the 'collection of posts' req,
 			//we'd be doing the same thing i'm doing for reading
 			int torecieve;
+		
+			//UPDATED: client is sending as strings
+			recv(ConnectionSocket,&intbuf,sizeof(intbuf),0);
+			torecieve=atoi(intbuf);
 
-			recv(ConnectionSocket,&torecieve,sizeof(torecieve),0);
 			fprintf(DEBUG,"recieved quantity client %d is sending (%d)\n",ConnectionSocket,torecieve);
 
 			for(int i=0;i<torecieve;i++){
@@ -91,7 +98,10 @@ void * RunServer (void* args){
 			int toSend= countListLength(*data->posts);
             pthread_mutex_unlock(data->mutlock);
 
-			send(ConnectionSocket,&toSend,sizeof(toSend),0);
+			//UPDATED: client accepts as string
+			sprintf(intbuf, "%d", toSend);
+
+			send(ConnectionSocket,&intbuf,sizeof(intbuf),0);
 			fprintf(DEBUG,"sent quantity of posts to client %d (%d)\n",ConnectionSocket,toSend);
 
 			//sending the client each post
